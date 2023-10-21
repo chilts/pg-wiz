@@ -5,7 +5,7 @@ import tap from 'tap'
 import * as pgWiz from '../pg-wiz.js'
 
 tap.test('Create a table class', t => {
-    t.plan(4)
+    t.plan(5)
 
     // table
     const account = new pgWiz.Table('account', 'acc')
@@ -16,6 +16,10 @@ tap.test('Create a table class', t => {
     // cols
     account.setCols('id', 'email', 'password')
     t.same(account.cols, [ 'id', 'email', 'password' ], 'Columns shows the new columns')
+
+    // statements
+    const accSelCols = 'id AS acc__id, email AS acc__email, password AS acc__password'
+    t.equal(account.selCols(), accSelCols, 'Select cols is correct')
 
     t.end()
 })

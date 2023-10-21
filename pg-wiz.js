@@ -8,4 +8,8 @@ export class Table {
     setCols(...cols) {
         this.cols = cols
     }
+
+    selCols() {
+        return this.cols.map(name => `${name} AS ${this.prefix}__${name}`).join(', ')
+    }
 }
