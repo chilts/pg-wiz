@@ -2,16 +2,16 @@
     "name": "pg-wiz",
     "title": "Pg Wizard",
     "description": "Simple SQL helper to use with `pg`. Not an ORM.",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "type": "module",
     "main": "pg-wiz.js",
     "scripts": {
         "test": "tap test/*.js"
     },
-    "author": "",
-    "license": "ISC",
     "devDependencies": {
         "pg": "^8.11.3",
         "tap": "^18.5.2"
-    }
+    },
+    "author": "Andrew Chilton <andychilton@gmail.com>",
+    "license": "ISC"
 }
