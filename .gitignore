@@ -1,0 +1,6 @@
+/.tap/
+
+/node_modules/
+
+*.log
+*~
