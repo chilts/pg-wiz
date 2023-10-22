@@ -18,7 +18,7 @@ tap.test('Create a table class', t => {
     t.same(account.cols, [ 'id', 'email', 'password' ], 'Columns shows the new columns')
 
     // statements
-    const accSelCols = 'id AS acc__id, email AS acc__email, password AS acc__password'
+    const accSelCols = 'acc.id AS acc__id, acc.email AS acc__email, acc.password AS acc__password'
     t.equal(account.selCols(), accSelCols, 'Select cols is correct')
 
     // statements
