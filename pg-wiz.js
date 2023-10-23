@@ -55,12 +55,15 @@ export class Table {
             if ( item.type === 'string' ) {
                 return `${item.col} = $${i+1}`
             }
-            if ( item.type === 'raw' ) {
+            if ( item.type === 'raw' && item.col ) {
                 return `${item.col} = $${i+1}`
             }
-        }).join(', ')
+        }).filter(Boolean).join(', ')
     }
 
+    // Takes an object and flattens all `prefix__*` keys with `*`.
+    //
+    // e.g. `{ acc__name } -> { name }`
     flattenPrefix(data) {
         for ( const item of this.normalisedCols ) {
             const prefixedName = `${this.prefix}__${item.name}`
@@ -71,6 +74,10 @@ export class Table {
         }
     }
 
+    // Takes an object and removes all `prefix__*` keys into a new object,
+    // then assigns it to the `name` key.
+    //
+    // e.g. `{ acc__email } -> { acc: { email } }`
     prefixToSubObj(name, data) {
         const obj = {}
         for ( const item of this.normalisedCols ) {
