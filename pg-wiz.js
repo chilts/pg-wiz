@@ -44,6 +44,7 @@ export class Table {
         this.realCols = this.normalisedCols.filter(item => item.col)
     }
 
+    // selCols() with a subset of cols?
     selCols() {
         return this.normalisedCols.map(item => {
             if ( item.type === 'string' ) {
