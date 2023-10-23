@@ -11,7 +11,9 @@ export class Table {
     }
 
     selCols() {
-        return this.cols.map(name => `${this.prefix}.${name} AS ${this.prefix}__${name}`).join(', ')
+        return this.cols.map(name => {
+            return `${this.prefix}.${name} AS ${this.prefix}__${name}`
+        }).join(', ')
     }
 
     updCols() {
