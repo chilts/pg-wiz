@@ -5,9 +5,10 @@ import tap from 'tap'
 import * as pgWiz from '../pg-wiz.js'
 
 tap.test('Column manipulation', t => {
-    t.plan(4)
+    t.plan(2)
 
-    const account = new pgWiz.Table('account', 'acc')
+    const acc = new pgWiz.Table('account', 'acc')
+    acc.setCols('id', 'email', 'logins', 'inserted')
 
     const date = (new Date()).toISOString()
     const input = {
@@ -16,20 +17,16 @@ tap.test('Column manipulation', t => {
         acc__logins: 1,
         acc__inserted: date,
     }
-    const exp = { id: 1, email: 'bob@example.com', logins: 1, inserted: date }
 
     const input1 = Object.assign({}, input)
-    const obj1 = account.scrubToNewObj(input1)
-    t.same(obj1, exp, 'Extracted data is correct')
-    t.same(input1, {}, 'Input data is now scrubbed')
+    const exp1 = { id: 1, email: 'bob@example.com', logins: 1, inserted: date }
+    acc.flattenPrefix(input1)
+    t.same(input1, exp1, 'Flattened data is correct')
 
     const input2 = Object.assign({}, input)
-    input2.account = account.scrubToNewObj(input2)
-    t.same(input2, { account: exp }, 'Manually extracted data to an object is correct')
-
-    const input3 = Object.assign({}, input)
-    account.scrubToKey(input3)
-    t.same(input3, { account: exp }, 'Extracted data to an object is correct')
+    const exp2 = { acc: exp1 }
+    acc.prefixToSubObj('acc', input2)
+    t.same(input2, exp2, 'Sub-Object is correct')
 
     t.end()
 })

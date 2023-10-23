@@ -61,27 +61,25 @@ export class Table {
         }).join(', ')
     }
 
-    scrubToNewObj(obj) {
-        console.warn('DEPRECATED: scrubToNewObj()')
-        const newObj = {}
-        for ( const key of Object.keys(obj) ) {
-            if ( key.startsWith(this.colPrefix) ) {
-                newObj[key.substr(this.colPrefix.length)] = obj[key]
-                delete obj[key]
+    flattenPrefix(data) {
+        for ( const item of this.normalisedCols ) {
+            const prefixedName = `${this.prefix}__${item.col}`
+            if ( prefixedName in data ) {
+                data[item.name] = data[prefixedName]
+                delete data[prefixedName]
             }
         }
-        return newObj
     }
 
-    scrubToKey(obj) {
-        console.warn('DEPRECATED: scrubToNewKey()')
-        const newObj = {}
-        for ( const key of Object.keys(obj) ) {
-            if ( key.startsWith(this.colPrefix) ) {
-                newObj[key.substr(this.colPrefix.length)] = obj[key]
-                delete obj[key]
+    prefixToSubObj(name, data) {
+        const obj = {}
+        for ( const item of this.normalisedCols ) {
+            const prefixedName = `${this.prefix}__${item.col}`
+            if ( prefixedName in data ) {
+                obj[item.name] = data[prefixedName]
+                delete data[prefixedName]
             }
         }
-        obj[this.name] = newObj
+        data[name] = obj
     }
 }
