@@ -5,7 +5,7 @@ import tap from 'tap'
 import * as pgWiz from '../pg-wiz.js'
 
 tap.test('Create a table class', t => {
-    t.plan(2)
+    t.plan(4)
 
     const cols = [
         'id',
@@ -27,6 +27,11 @@ tap.test('Create a table class', t => {
 
     t.same(org.cols, cols, 'Columns shows the new columns')
     t.same(chr.cols, cols, 'Columns shows the samecolumns')
+
+    const orgSelCols = cols.map(n => `org.${n} AS org__${n}`).join(', ')
+    t.equal(org.selCols(), orgSelCols, 'Select cols is correct for organisations')
+    const chrSelCols = cols.map(n => `chr.${n} AS chr__${n}`).join(', ')
+    t.equal(chr.selCols(), chrSelCols, 'Select cols is correct for charities')
 
     t.end()
 })

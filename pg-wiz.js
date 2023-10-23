@@ -28,7 +28,7 @@ export class Table {
             if ( typeof item === 'object' ) {
                 if ( item.type === 'raw' ) {
                     return {
-                        type: item.type,
+                        type: 'raw',
                         col: item.col,
                         name: item.name,
                         raw: item.raw,
