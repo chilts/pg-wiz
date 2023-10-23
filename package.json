@@ -2,7 +2,7 @@
     "name": "pg-wiz",
     "title": "Pg Wizard",
     "description": "Simple SQL helper to use with `pg`. Not an ORM.",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "type": "module",
     "main": "pg-wiz.js",
     "scripts": {
