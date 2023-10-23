@@ -6,7 +6,7 @@
     "type": "module",
     "main": "pg-wiz.js",
     "scripts": {
-        "test": "tap test/*.js"
+        "test": "tap --show-full-coverage test/*.js"
     },
     "devDependencies": {
         "pg": "^8.11.3",
