@@ -4,6 +4,8 @@ export class Table {
         this.prefix = prefix
         this.colPrefix = prefix + '__'
         this.cols = []
+        this.normalisedCols = []
+        this.realCols = []
     }
 
     setCols(...cols) {
