@@ -50,9 +50,6 @@ export class Table {
             else if ( item.type === 'raw' ) {
                 return `${item.raw} AS ${this.prefix}__${item.name}`
             }
-            else {
-                throw new Error("Program Error : couldn't map item to a select statement")
-            }
         }).join(', ')
     }
 
@@ -64,9 +61,6 @@ export class Table {
             else if ( item.type === 'raw' && item.col ) {
                 return item.col
             }
-            else {
-                throw new Error("Program Error : couldn't map item to an insert statement")
-            }
         }).join(', ')
     }
 
@@ -77,9 +71,6 @@ export class Table {
             }
             else if ( item.type === 'raw' && item.col ) {
                 return `$${i+1}`
-            }
-            else {
-                throw new Error("Program Error : couldn't map item to an update statement")
             }
         }).filter(Boolean).join(', ')
     }
