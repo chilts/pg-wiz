@@ -15,6 +15,9 @@ export class Table {
             if ( typeof item === 'string' ) {
                 return `${this.prefix}.${item} AS ${this.prefix}__${item}`
             }
+            if ( Array.isArray(item) ) {
+                return `${this.prefix}.${item[0]} AS ${this.prefix}__${item[1]}`
+            }
         }).join(', ')
     }
 
@@ -22,6 +25,9 @@ export class Table {
         return this.cols.map((item, i) => {
             if ( typeof item === 'string' ) {
                 return `${item} = $${i+1}`
+            }
+            if ( Array.isArray(item) ) {
+                return `${item[0]} = $${i+1}`
             }
         }).join(', ')
     }
