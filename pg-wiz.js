@@ -11,13 +11,19 @@ export class Table {
     }
 
     selCols() {
-        return this.cols.map(name => {
-            return `${this.prefix}.${name} AS ${this.prefix}__${name}`
+        return this.cols.map(item => {
+            if ( typeof item === 'string' ) {
+                return `${this.prefix}.${item} AS ${this.prefix}__${item}`
+            }
         }).join(', ')
     }
 
     updCols() {
-        return this.cols.map((name, i) => `${name} = $${i+1}`).join(', ')
+        return this.cols.map((item, i) => {
+            if ( typeof item === 'string' ) {
+                return `${item} = $${i+1}`
+            }
+        }).join(', ')
     }
 
     scrubToNewObj(obj) {
