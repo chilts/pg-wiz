@@ -63,7 +63,7 @@ export class Table {
 
     flattenPrefix(data) {
         for ( const item of this.normalisedCols ) {
-            const prefixedName = `${this.prefix}__${item.col}`
+            const prefixedName = `${this.prefix}__${item.name}`
             if ( prefixedName in data ) {
                 data[item.name] = data[prefixedName]
                 delete data[prefixedName]
@@ -74,7 +74,7 @@ export class Table {
     prefixToSubObj(name, data) {
         const obj = {}
         for ( const item of this.normalisedCols ) {
-            const prefixedName = `${this.prefix}__${item.col}`
+            const prefixedName = `${this.prefix}__${item.name}`
             if ( prefixedName in data ) {
                 obj[item.name] = data[prefixedName]
                 delete data[prefixedName]

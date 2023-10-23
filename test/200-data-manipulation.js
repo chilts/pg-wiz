@@ -8,7 +8,7 @@ tap.test('Column manipulation', t => {
     t.plan(2)
 
     const acc = new pgWiz.Table('account', 'acc')
-    acc.setCols('id', 'email', 'logins', 'inserted')
+    acc.setCols( [ 'account_id', 'id' ], 'email', 'logins', [ 'created_date', 'inserted' ])
 
     const date = (new Date()).toISOString()
     const input = {
@@ -17,14 +17,22 @@ tap.test('Column manipulation', t => {
         acc__logins: 1,
         acc__inserted: date,
     }
+    const exp = {
+        id: 1,
+        email: 'bob@example.com',
+        logins: 1,
+        inserted: date,
+    }
 
     const input1 = Object.assign({}, input)
-    const exp1 = { id: 1, email: 'bob@example.com', logins: 1, inserted: date }
+    const exp1 = exp
     acc.flattenPrefix(input1)
     t.same(input1, exp1, 'Flattened data is correct')
 
     const input2 = Object.assign({}, input)
-    const exp2 = { acc: exp1 }
+    const exp2 = {
+        acc: exp,
+    }
     acc.prefixToSubObj('acc', input2)
     t.same(input2, exp2, 'Sub-Object is correct')
 
