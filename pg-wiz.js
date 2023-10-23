@@ -1,6 +1,6 @@
 export class Table {
-    constructor(name, prefix) {
-        this.name = name
+    constructor(tablename, prefix) {
+        this.tablename = tablename
         this.prefix = prefix
         this.colPrefix = prefix + '__'
         this.cols = []
@@ -37,6 +37,9 @@ export class Table {
                 }
             }
         })
+
+        // get only the 'real' columns in this list
+        this.realCols = this.normalisedCols.filter(item => item.col)
     }
 
     selCols() {
@@ -44,21 +47,64 @@ export class Table {
             if ( item.type === 'string' ) {
                 return `${this.prefix}.${item.col} AS ${this.prefix}__${item.name}`
             }
-            if ( item.type === 'raw' ) {
+            else if ( item.type === 'raw' ) {
                 return `${item.raw} AS ${this.prefix}__${item.name}`
+            }
+            else {
+                throw new Error("Program Error : couldn't map item to a select statement")
             }
         }).join(', ')
     }
 
-    updCols() {
-        return this.normalisedCols.map((item, i) => {
+    insCols() {
+        return this.realCols.map((item, i) => {
             if ( item.type === 'string' ) {
-                return `${item.col} = $${i+1}`
+                return item.col
             }
-            if ( item.type === 'raw' && item.col ) {
-                return `${item.col} = $${i+1}`
+            else if ( item.type === 'raw' && item.col ) {
+                return item.col
+            }
+            else {
+                throw new Error("Program Error : couldn't map item to an insert statement")
+            }
+        }).join(', ')
+    }
+
+    insPlaceholders() {
+        return this.realCols.map((item, i) => {
+            if ( item.type === 'string' ) {
+                return `$${i+1}`
+            }
+            else if ( item.type === 'raw' && item.col ) {
+                return `$${i+1}`
+            }
+            else {
+                throw new Error("Program Error : couldn't map item to an update statement")
             }
         }).filter(Boolean).join(', ')
+    }
+
+    updCols() {
+        const cols = this.realCols.filter(item => item.col)
+        return cols.map((item, i) => {
+            return `${item.col} = $${i+1}`
+        }).join(', ')
+    }
+
+    sel() {
+        return `SELECT ${this.selCols()} FROM ${this.tablename} ${this.prefix}`
+    }
+
+    ins() {
+        return `INSERT INTO ${this.tablename}(${this.insCols()}) VALUES(${this.insPlaceholders()})`
+    }
+
+    upd() {
+        return `UPDATE ${this.tablename} SET ${this.updCols()}`
+    }
+
+    del() {
+        return `DELETE FROM ${this.tablename} ${this.prefix}`
     }
 
     // Takes an object and flattens all `prefix__*` keys with `*`.

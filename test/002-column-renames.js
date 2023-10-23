@@ -9,7 +9,7 @@ tap.test('Do column renames as part of the setup', t => {
 
     // table
     const account = new pgWiz.Table('account', 'acc')
-    t.equal(account.name, 'account', 'Name is correct')
+    t.equal(account.tablename, 'account', 'Name is correct')
     t.equal(account.prefix, 'acc', 'Prefix is correct')
     t.same(account.cols, [], 'Columns is still zero')
 
