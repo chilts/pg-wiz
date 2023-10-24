@@ -120,6 +120,53 @@ tap.test('.mayHaveOne()', t => {
     t.end()
 })
 
+tap.test('Many to many with a junction table', t => {
+    t.plan(1)
+
+    const acc = new pgWiz.Table('account', 'acc')
+    acc.setCols('id', 'email', 'username')
+
+    const pst = new pgWiz.Table('post', 'pst')
+    pst.setCols('id', 'title', 'content')
+
+    const lik = new pgWiz.Table('like', 'lik')
+    lik.setCols('id', 'account_id', 'post_id')
+
+    // many to many relationship through the junction table 'like'
+
+    // account 1:m likes
+    acc.hasMany('likes', 'id', lik, 'account_id')
+    lik.hasOne('account', 'account_id', acc, 'id')
+
+    // post 1:m likes
+    pst.hasMany('likes', 'id', lik, 'post_id')
+    lik.hasOne('post', 'post_id', pst, 'id')
+
+    const selLikesSql = `
+      SELECT
+        ${lik.selCols()},
+        ${acc.selCols()},
+        ${pst.selCols()}
+      FROM
+        ${lik.from()}
+        ${lik.join('account')}
+        ${lik.join('post')}
+    `
+    const selLikesExp = `
+      SELECT
+        lik.id AS lik__id, lik.account_id AS lik__account_id, lik.post_id AS lik__post_id,
+        acc.id AS acc__id, acc.email AS acc__email, acc.username AS acc__username,
+        pst.id AS pst__id, pst.title AS pst__title, pst.content AS pst__content
+      FROM
+        like lik
+        JOIN account acc ON ( lik.account_id = acc.id )
+        JOIN post pst ON ( lik.post_id = pst.id )
+    `
+    t.equal(selLikesExp, selLikesSql, 'The big select through a junction table is correct')
+
+    t.end()
+})
+
 tap.test('Errors with relationships', t => {
     t.plan(4)
 
