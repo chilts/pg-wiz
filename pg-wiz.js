@@ -2,7 +2,7 @@ export class Table {
     constructor(tablename, prefix, pk) {
         this.tablename = tablename
         this.prefix = prefix
-        this.pk = pk
+        this.pk = pk || 'id'
         this.colPrefix = prefix + '__'
         this.cols = []
         this.normalisedCols = []
@@ -64,7 +64,7 @@ export class Table {
     // e.g.2. this "tweet" belongs to that "user".
     //
     // You can see that this is a one to one relationship.
-    hasOne(name, sourceFieldname, target, targetFieldname /* Deprecated */) {
+    hasOne(name, sourceFieldname, target, targetFieldname) {
         if ( name in this.relationship ) {
             throw new Error(`hasOne() - a join of this name '${name}' already exists`)
         }

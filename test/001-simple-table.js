@@ -5,12 +5,13 @@ import tap from 'tap'
 import * as pgWiz from '../pg-wiz.js'
 
 tap.test('Create a table class', t => {
-    t.plan(8)
+    t.plan(9)
 
     // table
     const account = new pgWiz.Table('account', 'acc')
     t.equal(account.tablename, 'account', 'Name is correct')
     t.equal(account.prefix, 'acc', 'Prefix is correct')
+    t.equal(account.pk, 'id', 'Pk default is correct')
     t.same(account.cols, [], 'Columns is still zero')
 
     // cols
@@ -29,6 +30,19 @@ tap.test('Create a table class', t => {
 
     const accUpdCols = 'id = $1, email = $2, password = $3'
     t.equal(account.updCols(), accUpdCols, 'Update cols is correct')
+
+    t.end()
+})
+
+tap.test('Create a table class with a specific PK', t => {
+    t.plan(4)
+
+    // table
+    const account = new pgWiz.Table('account', 'acc', 'username')
+    t.equal(account.tablename, 'account', 'Name is correct')
+    t.equal(account.prefix, 'acc', 'Prefix is correct')
+    t.equal(account.pk, 'username', 'Primary key is correct')
+    t.same(account.cols, [], 'Columns is still zero')
 
     t.end()
 })
