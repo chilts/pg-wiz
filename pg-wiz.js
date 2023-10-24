@@ -9,26 +9,6 @@ export class Table {
         this.relationship = {}
     }
 
-    // This source belongs to that target:
-    //
-    // e.g.1. this "post" belongs to that "blog".
-    // e.g.2. this "tweet" belongs to that "user".
-    //
-    // You can see that this is a one to many relationship.
-    addBelongsTo(name, target, sourceFieldname, targetFieldname) {
-        if ( name in this.relationship ) {
-            throw new Error(`addBelongsTo() - a join of this name '${name}' already exists`)
-        }
-
-        this.relationship[name] = {
-            name,
-            type: 'belongsTo',
-            target,
-            sourceFieldname,
-            targetFieldname,
-        }
-    }
-
     setCols(...cols) {
         this.cols = cols
         this.normalisedCols = cols.map(item => {
@@ -77,6 +57,48 @@ export class Table {
         }).join(', ')
     }
 
+    // This source belongs to that target:
+    //
+    // e.g.1. this "post" belongs to that "blog".
+    // e.g.2. this "tweet" belongs to that "user".
+    //
+    // You can see that this is a one to many relationship.
+    belongsTo(name, sourceFieldname, target, targetFieldname) {
+        if ( name in this.relationship ) {
+            throw new Error(`belongsTo() - a join of this name '${name}' already exists`)
+        }
+
+        this.relationship[name] = {
+            name,
+            type: 'belongsTo',
+            sourceFieldname,
+            targetTablename: target.tablename,
+            targetPrefix: target.prefix,
+            targetFieldname,
+        }
+    }
+
+    // This source has many of that target:
+    //
+    // e.g.1. this "account" has many "tweets".
+    // e.g.2. this "blog" has many "posts".
+    //
+    // You can see that this is a one to many relationship.
+    hasMany(name, sourceFieldname, target, targetFieldname) {
+        if ( name in this.relationship ) {
+            throw new Error(`hasMany() - a join of this name '${name}' already exists`)
+        }
+
+        this.relationship[name] = {
+            name,
+            type: 'hasMany',
+            sourceFieldname,
+            targetTablename: target.tablename,
+            targetPrefix: target.prefix,
+            targetFieldname,
+        }
+    }
+
     insCols() {
         return this.realCols.map((item, i) => {
             if ( item.type === 'string' ) {
@@ -106,8 +128,12 @@ export class Table {
         }).join(', ')
     }
 
+    from() {
+        return `${this.tablename} ${this.prefix}`
+    }
+
     sel() {
-        return `SELECT ${this.selCols()} FROM ${this.tablename} ${this.prefix}`
+        return `SELECT ${this.selCols()} FROM ${this.from()}`
     }
 
     ins() {
@@ -119,7 +145,7 @@ export class Table {
     }
 
     del() {
-        return `DELETE FROM ${this.tablename} ${this.prefix}`
+        return `DELETE FROM ${this.from()}`
     }
 
     join(name) {
@@ -128,18 +154,35 @@ export class Table {
             throw new Error(`join() - no relationship of name '${name}' found`)
         }
 
-        // belongsTo
-        return [
-            'JOIN',
-            join.target.tablename,
-            join.target.prefix,
-            'ON',
-            '(',
-            `${this.prefix}.${join.sourceFieldname}`,
-            '=',
-            `${join.target.prefix}.${join.targetFieldname}`,
-            ')',
-        ].join(' ')
+        // belongsTo (always has one)
+        if ( join.type === 'belongsTo' ) {
+            return [
+                'JOIN',
+                join.targetTablename,
+                join.targetPrefix,
+                'ON',
+                '(',
+                `${this.prefix}.${join.sourceFieldname}`,
+                '=',
+                `${join.targetPrefix}.${join.targetFieldname}`,
+                ')',
+            ].join(' ')
+        }
+
+        // hasMany (0, 1, or many)
+        if ( join.type === 'hasMany' ) {
+            return [
+                'JOIN',
+                join.targetTablename,
+                join.targetPrefix,
+                'ON',
+                '(',
+                `${this.prefix}.${join.sourceFieldname}`,
+                '=',
+                `${join.targetPrefix}.${join.targetFieldname}`,
+                ')',
+            ].join(' ')
+        }
     }
 
     // Takes an object and flattens all `prefix__*` keys with `*`.
