@@ -6,6 +6,27 @@ export class Table {
         this.cols = []
         this.normalisedCols = []
         this.realCols = []
+        this.relationship = {}
+    }
+
+    // This source belongs to that target:
+    //
+    // e.g.1. this "post" belongs to that "blog".
+    // e.g.2. this "tweet" belongs to that "user".
+    //
+    // You can see that this is a one to many relationship.
+    addBelongsTo(name, target, sourceFieldname, targetFieldname) {
+        if ( name in this.relationship ) {
+            throw new Error(`addBelongsTo() - a join of this name '${name}' already exists`)
+        }
+
+        this.relationship[name] = {
+            name,
+            type: 'belongsTo',
+            target,
+            sourceFieldname,
+            targetFieldname,
+        }
     }
 
     setCols(...cols) {
@@ -99,6 +120,26 @@ export class Table {
 
     del() {
         return `DELETE FROM ${this.tablename} ${this.prefix}`
+    }
+
+    join(name) {
+        const join = this.relationship[name]
+        if (!join) {
+            throw new Error(`join() - no relationship of name '${name}' found`)
+        }
+
+        // belongsTo
+        return [
+            'JOIN',
+            join.target.tablename,
+            join.target.prefix,
+            'ON',
+            '(',
+            `${this.prefix}.${join.sourceFieldname}`,
+            '=',
+            `${join.target.prefix}.${join.targetFieldname}`,
+            ')',
+        ].join(' ')
     }
 
     // Takes an object and flattens all `prefix__*` keys with `*`.
