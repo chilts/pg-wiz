@@ -247,5 +247,6 @@ export class Table {
             }
         }
         data[name] = obj
+        return obj
     }
 }

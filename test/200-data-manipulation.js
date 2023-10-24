@@ -5,7 +5,7 @@ import tap from 'tap'
 import * as pgWiz from '../pg-wiz.js'
 
 tap.test('Column manipulation', t => {
-    t.plan(2)
+    t.plan(3)
 
     const acc = new pgWiz.Table('account', 'acc')
     acc.setCols( [ 'account_id', 'id' ], 'email', 'logins', [ 'created_date', 'inserted' ])
@@ -33,8 +33,9 @@ tap.test('Column manipulation', t => {
     const exp2 = {
         acc: exp,
     }
-    acc.prefixToSubObj('acc', input2)
-    t.same(input2, exp2, 'Sub-Object is correct')
+    const newObj = acc.prefixToSubObj('acc', input2)
+    t.same(newObj, exp, 'Newly created object is correct')
+    t.same(input2, exp2, 'Sub-Object is correct inside the original')
 
     t.end()
 })
