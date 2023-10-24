@@ -1,7 +1,8 @@
 export class Table {
-    constructor(tablename, prefix) {
+    constructor(tablename, prefix, pk) {
         this.tablename = tablename
         this.prefix = prefix
+        this.pk = pk
         this.colPrefix = prefix + '__'
         this.cols = []
         this.normalisedCols = []
@@ -63,7 +64,7 @@ export class Table {
     // e.g.2. this "tweet" belongs to that "user".
     //
     // You can see that this is a one to one relationship.
-    hasOne(name, sourceFieldname, target, targetFieldname) {
+    hasOne(name, sourceFieldname, target, targetFieldname /* Deprecated */) {
         if ( name in this.relationship ) {
             throw new Error(`hasOne() - a join of this name '${name}' already exists`)
         }
@@ -74,7 +75,7 @@ export class Table {
             sourceFieldname,
             targetTablename: target.tablename,
             targetPrefix: target.prefix,
-            targetFieldname,
+            targetFieldname: targetFieldname || target.pk,
         }
     }
 
@@ -84,7 +85,7 @@ export class Table {
     // e.g.2. this "blog" has many "posts".
     //
     // You can see that this is a one to many relationship.
-    hasMany(name, sourceFieldname, target, targetFieldname) {
+    hasMany(name, target, targetFieldname) {
         if ( name in this.relationship ) {
             throw new Error(`hasMany() - a join of this name '${name}' already exists`)
         }
@@ -92,7 +93,7 @@ export class Table {
         this.relationship[name] = {
             name,
             type: 'hasMany',
-            sourceFieldname,
+            sourceFieldname: this.pk,
             targetTablename: target.tablename,
             targetPrefix: target.prefix,
             targetFieldname,
@@ -104,7 +105,7 @@ export class Table {
     // e.g.1. this "book" may have an "image"
     //
     // You can see that this is an (optional) one to one relationship.
-    mayHaveOne(name, sourceFieldname, target, targetFieldname) {
+    mayHaveOne(name, sourceFieldname, target) {
         if ( name in this.relationship ) {
             throw new Error(`mayHaveOne() - a join of this name '${name}' already exists`)
         }
@@ -115,7 +116,7 @@ export class Table {
             sourceFieldname,
             targetTablename: target.tablename,
             targetPrefix: target.prefix,
-            targetFieldname,
+            targetFieldname: target.pk,
         }
     }
 

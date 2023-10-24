@@ -7,15 +7,15 @@ import * as pgWiz from '../pg-wiz.js'
 tap.test('.hasOne()', t => {
     t.plan(2)
 
-    const acc = new pgWiz.Table('account', 'acc')
+    const acc = new pgWiz.Table('account', 'acc', 'id')
     acc.setCols('id', 'email')
 
     // an "item" such as a "post", "tweet", "image", or "todo"
-    const itm = new pgWiz.Table('item', 'itm')
+    const itm = new pgWiz.Table('item', 'itm', 'id')
     itm.setCols('id', 'account_id', 'title')
 
     // set up this relationship
-    itm.hasOne('account', 'account_id', acc, 'id')
+    itm.hasOne('account', 'account_id', acc)
 
     const join = {
         account: {
@@ -39,15 +39,15 @@ tap.test('.hasOne()', t => {
 tap.test('.hasMany()', t => {
     t.plan(2)
 
-    const acc = new pgWiz.Table('account', 'acc')
+    const acc = new pgWiz.Table('account', 'acc', 'id')
     acc.setCols('id', 'email')
 
     // an "item" such as a "post", "tweet", "image", or "todo"
-    const itm = new pgWiz.Table('item', 'itm')
+    const itm = new pgWiz.Table('item', 'itm', 'id')
     itm.setCols('id', 'account_id', 'title')
 
     // set up this relationship
-    acc.hasMany('items', 'id', itm, 'account_id')
+    acc.hasMany('items', itm, 'account_id')
 
     const join = {
         items: {
@@ -72,16 +72,16 @@ tap.test('.mayHaveOne()', t => {
     t.plan(4)
 
     // i.e. Each account *might* own a car (make/model), but not every account does.
-    const acc = new pgWiz.Table('account', 'acc')
+    const acc = new pgWiz.Table('account', 'acc', 'id')
     acc.setCols('id', 'car_id', 'email')
 
     // a car
-    const car = new pgWiz.Table('car', 'car')
+    const car = new pgWiz.Table('car', 'car', 'id')
     car.setCols('id', 'make', 'model', 'year')
 
     // set up this relationship
-    car.hasMany('accounts', 'id', acc, 'car_id')
-    acc.mayHaveOne('car', 'car_id', car, 'id')
+    car.hasMany('accounts', acc, 'car_id')
+    acc.mayHaveOne('car', 'car_id', car)
 
     // test car
     const relationshipCar = {
@@ -123,24 +123,24 @@ tap.test('.mayHaveOne()', t => {
 tap.test('Many to many with a junction table', t => {
     t.plan(1)
 
-    const acc = new pgWiz.Table('account', 'acc')
+    const acc = new pgWiz.Table('account', 'acc', 'id')
     acc.setCols('id', 'email', 'username')
 
-    const pst = new pgWiz.Table('post', 'pst')
+    const pst = new pgWiz.Table('post', 'pst', 'id')
     pst.setCols('id', 'title', 'content')
 
-    const lik = new pgWiz.Table('like', 'lik')
+    const lik = new pgWiz.Table('like', 'lik', 'id')
     lik.setCols('id', 'account_id', 'post_id')
 
     // many to many relationship through the junction table 'like'
 
     // account 1:m likes
-    acc.hasMany('likes', 'id', lik, 'account_id')
-    lik.hasOne('account', 'account_id', acc, 'id')
+    acc.hasMany('likes', lik, 'account_id')
+    lik.hasOne('account', 'account_id', acc)
 
     // post 1:m likes
-    pst.hasMany('likes', 'id', lik, 'post_id')
-    lik.hasOne('post', 'post_id', pst, 'id')
+    pst.hasMany('likes', lik, 'post_id')
+    lik.hasOne('post', 'post_id', pst)
 
     const selLikesSql = `
       SELECT
@@ -170,35 +170,35 @@ tap.test('Many to many with a junction table', t => {
 tap.test('Errors with relationships', t => {
     t.plan(4)
 
-    const org = new pgWiz.Table('organisation', 'org')
+    const org = new pgWiz.Table('organisation', 'org', 'id')
     org.setCols('id', 'title', 'description')
 
-    const car = new pgWiz.Table('car', 'car')
+    const car = new pgWiz.Table('car', 'car', 'id')
     car.setCols('id', 'make', 'model', 'year')
 
-    const acc = new pgWiz.Table('account', 'acc')
+    const acc = new pgWiz.Table('account', 'acc', 'id')
     acc.setCols('id', 'organisation_id', 'car_id', 'email')
 
     // an "item" such as a "post", "tweet", "image", or "todo"
-    const itm = new pgWiz.Table('item', 'itm')
+    const itm = new pgWiz.Table('item', 'itm', 'id')
     itm.setCols('id', 'account_id', 'title')
 
     // `.hasMany()` throws with duplicate relationships
-    acc.hasMany('items', 'id', itm, 'account_id')
+    acc.hasMany('items', itm, 'account_id')
     t.throws(
-        () => acc.hasMany('items', 'id', itm, 'account_id'),
+        () => acc.hasMany('items', itm, 'account_id'),
         'Adding a 2nd relationship with the same name throws',
     )
 
     // `.hasOne()` throws with duplicate relationships
-    acc.hasOne('organisation', 'organisation_id', org, 'id')
+    acc.hasOne('organisation', 'organisation_id', org)
     t.throws(
-        () => acc.hasOne('organisation', 'organisation_id', org, 'id'),
+        () => acc.hasOne('organisation', 'organisation_id', org),
         'Adding a 2nd relationship with the same name throws',
     )
 
     // `.mayHaveOne()` throws with duplicate relationships
-    acc.mayHaveOne('car', 'car_id', car, 'id')
+    acc.mayHaveOne('car', 'car_id', car)
     t.throws(
         () => acc.mayHaveOne('car', 'car_id', car, 'id'),
         'Adding a 2nd relationship with the same name throws',

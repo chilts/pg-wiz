@@ -49,29 +49,29 @@ bok.setCols(
 )
 
 // add relationships
-acc.hasMany('libraries', 'id', lib, 'account_id')
-lib.hasOne('account', 'account_id', acc, 'id')
+acc.hasMany('libraries', lib, 'account_id')
+lib.hasOne('account', 'account_id', acc)
 
 // locations belong to libraries
-loc.hasOne('library', 'library_id', lib, 'id')
-lib.hasMany('locations', 'id', loc, 'library_id')
+loc.hasOne('library', 'library_id', lib)
+lib.hasMany('locations', loc, 'library_id')
 
 // images belong to libraries and accounts
-img.hasOne('library', 'library_id', lib, 'id')
-img.hasOne('account', 'account_id', acc, 'id')
+img.hasOne('library', 'library_id', lib)
+img.hasOne('account', 'account_id', acc)
 
 // books belong to libraries
-bok.hasOne('library', 'library_id', lib, 'id')
-lib.hasMany('books', 'id', bok, 'library_id')
+bok.hasOne('library', 'library_id', lib)
+lib.hasMany('books', bok, 'library_id')
 // books also have a location
-bok.hasOne('location', 'location_id', loc, 'id')
-bok.mayHaveOne('image', 'image_id', img, 'id')
-bok.mayHaveOne('isbn', 'isbn_id', isb, 'id')
+bok.hasOne('location', 'location_id', loc)
+bok.mayHaveOne('image', 'image_id', img)
+bok.mayHaveOne('isbn', 'isbn_id', isb)
 // also, image only ever has one book
 img.hasOne('book', 'id', bok, 'image_id')
 
 // isbns have a metadata
-isb.hasOne('metadata', 'metadata_id', met, 'id')
+isb.hasOne('metadata', 'metadata_id', met)
 
 const selLibrariesWithAccountSql = `
   SELECT
