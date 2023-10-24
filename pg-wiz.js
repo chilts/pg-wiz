@@ -62,15 +62,15 @@ export class Table {
     // e.g.1. this "post" belongs to that "blog".
     // e.g.2. this "tweet" belongs to that "user".
     //
-    // You can see that this is a one to many relationship.
-    belongsTo(name, sourceFieldname, target, targetFieldname) {
+    // You can see that this is a one to one relationship.
+    hasOne(name, sourceFieldname, target, targetFieldname) {
         if ( name in this.relationship ) {
-            throw new Error(`belongsTo() - a join of this name '${name}' already exists`)
+            throw new Error(`hasOne() - a join of this name '${name}' already exists`)
         }
 
         this.relationship[name] = {
             name,
-            type: 'belongsTo',
+            type: 'hasOne',
             sourceFieldname,
             targetTablename: target.tablename,
             targetPrefix: target.prefix,
@@ -92,6 +92,26 @@ export class Table {
         this.relationship[name] = {
             name,
             type: 'hasMany',
+            sourceFieldname,
+            targetTablename: target.tablename,
+            targetPrefix: target.prefix,
+            targetFieldname,
+        }
+    }
+
+    // This source may have one target:
+    //
+    // e.g.1. this "book" may have an "image"
+    //
+    // You can see that this is an (optional) one to one relationship.
+    mayHaveOne(name, sourceFieldname, target, targetFieldname) {
+        if ( name in this.relationship ) {
+            throw new Error(`mayHaveOne() - a join of this name '${name}' already exists`)
+        }
+
+        this.relationship[name] = {
+            name,
+            type: 'mayHaveOne',
             sourceFieldname,
             targetTablename: target.tablename,
             targetPrefix: target.prefix,
@@ -154,10 +174,25 @@ export class Table {
             throw new Error(`join() - no relationship of name '${name}' found`)
         }
 
-        // belongsTo (always has one)
-        if ( join.type === 'belongsTo' ) {
+        // hasOne (always has one)
+        if ( join.type === 'hasOne' ) {
             return [
                 'JOIN',
+                join.targetTablename,
+                join.targetPrefix,
+                'ON',
+                '(',
+                `${this.prefix}.${join.sourceFieldname}`,
+                '=',
+                `${join.targetPrefix}.${join.targetFieldname}`,
+                ')',
+            ].join(' ')
+        }
+
+        // mayHaveOne (optionally has one)
+        if ( join.type === 'mayHaveOne' ) {
+            return [
+                'LEFT JOIN',
                 join.targetTablename,
                 join.targetPrefix,
                 'ON',

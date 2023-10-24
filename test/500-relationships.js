@@ -4,7 +4,7 @@ import tap from 'tap'
 // local
 import * as pgWiz from '../pg-wiz.js'
 
-tap.test('.belongsTo()', t => {
+tap.test('.hasOne()', t => {
     t.plan(2)
 
     const acc = new pgWiz.Table('account', 'acc')
@@ -15,13 +15,12 @@ tap.test('.belongsTo()', t => {
     itm.setCols('id', 'account_id', 'title')
 
     // set up this relationship
-    itm.belongsTo('account', 'account_id', acc, 'id')
+    itm.hasOne('account', 'account_id', acc, 'id')
 
     const join = {
         account: {
             name: 'account',
-            type: 'belongsTo',
-            // target: acc,
+            type: 'hasOne',
             sourceFieldname: 'account_id',
             targetTablename: 'account',
             targetPrefix: 'acc',
@@ -55,7 +54,6 @@ tap.test('.hasMany()', t => {
             name: 'items',
             type: 'hasMany',
             sourceFieldname: 'id',
-            // target: itm,
             targetTablename: 'item',
             targetPrefix: 'itm',
             targetFieldname: 'account_id',
@@ -70,14 +68,69 @@ tap.test('.hasMany()', t => {
     t.end()
 })
 
+tap.test('.mayHaveOne()', t => {
+    t.plan(4)
+
+    // i.e. Each account *might* own a car (make/model), but not every account does.
+    const acc = new pgWiz.Table('account', 'acc')
+    acc.setCols('id', 'car_id', 'email')
+
+    // a car
+    const car = new pgWiz.Table('car', 'car')
+    car.setCols('id', 'make', 'model', 'year')
+
+    // set up this relationship
+    car.hasMany('accounts', 'id', acc, 'car_id')
+    acc.mayHaveOne('car', 'car_id', car, 'id')
+
+    // test car
+    const relationshipCar = {
+        accounts: {
+            name: 'accounts',
+            type: 'hasMany',
+            sourceFieldname: 'id',
+            targetTablename: 'account',
+            targetPrefix: 'acc',
+            targetFieldname: 'car_id',
+        },
+    }
+    t.same(car.relationship, relationshipCar, 'The relationship is correct')
+
+    const joinAccSql = car.join('accounts')
+    const joinAccExp = 'JOIN account acc ON ( car.id = acc.car_id )'
+    t.equal(joinAccSql, joinAccExp, 'The JOIN is as expected')
+
+    // test account
+    const relationshipAcc = {
+        car: {
+            name: 'car',
+            type: 'mayHaveOne',
+            sourceFieldname: 'car_id',
+            targetTablename: 'car',
+            targetPrefix: 'car',
+            targetFieldname: 'id',
+        },
+    }
+    t.same(acc.relationship, relationshipAcc, 'The relationship is correct')
+
+    const joinCarSql = acc.join('car')
+    const joinCarExp = 'LEFT JOIN car car ON ( acc.car_id = car.id )'
+    t.equal(joinCarSql, joinCarExp, 'The JOIN is as expected')
+
+    t.end()
+})
+
 tap.test('Errors with relationships', t => {
-    t.plan(3)
+    t.plan(4)
 
     const org = new pgWiz.Table('organisation', 'org')
     org.setCols('id', 'title', 'description')
 
+    const car = new pgWiz.Table('car', 'car')
+    car.setCols('id', 'make', 'model', 'year')
+
     const acc = new pgWiz.Table('account', 'acc')
-    acc.setCols('id', 'organisation_id', 'email')
+    acc.setCols('id', 'organisation_id', 'car_id', 'email')
 
     // an "item" such as a "post", "tweet", "image", or "todo"
     const itm = new pgWiz.Table('item', 'itm')
@@ -90,10 +143,17 @@ tap.test('Errors with relationships', t => {
         'Adding a 2nd relationship with the same name throws',
     )
 
-    // `.belongsTo()` throws with duplicate relationships
-    acc.belongsTo('organisation', 'organisation_id', org, 'id')
+    // `.hasOne()` throws with duplicate relationships
+    acc.hasOne('organisation', 'organisation_id', org, 'id')
     t.throws(
-        () => acc.belongsTo('organisation', 'organisation_id', org, 'id'),
+        () => acc.hasOne('organisation', 'organisation_id', org, 'id'),
+        'Adding a 2nd relationship with the same name throws',
+    )
+
+    // `.mayHaveOne()` throws with duplicate relationships
+    acc.mayHaveOne('car', 'car_id', car, 'id')
+    t.throws(
+        () => acc.mayHaveOne('car', 'car_id', car, 'id'),
         'Adding a 2nd relationship with the same name throws',
     )
 
