@@ -62,21 +62,22 @@ lib.hasOne('account', 'account_id', acc)
 loc.hasOne('library', 'library_id', lib)
 lib.hasMany('locations', loc, 'library_id')
 
-// images belong to libraries and accounts
+// images belong to libraries, accounts, and books
 img.hasOne('library', 'library_id', lib)
 img.hasOne('account', 'account_id', acc)
+img.hasOne('book', 'id', bok, 'image_id')
 
 // books belong to libraries
 bok.hasOne('library', 'library_id', lib)
 lib.hasMany('books', bok, 'library_id')
 // books also have a location
 bok.hasOne('location', 'location_id', loc)
+// books may have one image
 bok.mayHaveOne('image', 'image_id', img)
+// books may have one ISBN
 bok.mayHaveOne('isbn', 'isbn_id', isb)
-// also, image only ever has one book
-img.hasOne('book', 'id', bok, 'image_id')
 
-// isbns have a metadata
+// ISBNs have a metadata
 isb.hasOne('metadata', 'metadata_id', met)
 
 // ----------------------------------------------------------------------------

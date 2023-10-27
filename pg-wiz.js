@@ -58,27 +58,6 @@ export class Table {
         }).join(', ')
     }
 
-    // This source belongs to that target:
-    //
-    // e.g.1. this "post" belongs to that "blog".
-    // e.g.2. this "tweet" belongs to that "user".
-    //
-    // You can see that this is a one to one relationship.
-    hasOne(name, sourceFieldname, target, targetFieldname) {
-        if ( name in this.relationship ) {
-            throw new Error(`hasOne() - a join of this name '${name}' already exists`)
-        }
-
-        this.relationship[name] = {
-            name,
-            type: 'hasOne',
-            sourceFieldname,
-            targetTablename: target.tablename,
-            targetPrefix: target.prefix,
-            targetFieldname: targetFieldname || target.pk,
-        }
-    }
-
     // This source has many of that target:
     //
     // e.g.1. this "account" has many "tweets".
@@ -100,12 +79,33 @@ export class Table {
         }
     }
 
+    // This source belongs to that target:
+    //
+    // e.g.1. this "post" belongs to that "blog".
+    // e.g.2. this "tweet" belongs to that "user".
+    //
+    // You can see that this is a one to one relationship.
+    hasOne(name, sourceFieldname, target, targetFieldname) {
+        if ( name in this.relationship ) {
+            throw new Error(`hasOne() - a join of this name '${name}' already exists`)
+        }
+
+        this.relationship[name] = {
+            name,
+            type: 'hasOne',
+            sourceFieldname,
+            targetTablename: target.tablename,
+            targetPrefix: target.prefix,
+            targetFieldname: targetFieldname || target.pk,
+        }
+    }
+
     // This source may have one target:
     //
     // e.g.1. this "book" may have an "image"
     //
     // You can see that this is an (optional) one to one relationship.
-    mayHaveOne(name, sourceFieldname, target) {
+    mayHaveOne(name, sourceFieldname, target, targetFieldname) {
         if ( name in this.relationship ) {
             throw new Error(`mayHaveOne() - a join of this name '${name}' already exists`)
         }
@@ -116,7 +116,7 @@ export class Table {
             sourceFieldname,
             targetTablename: target.tablename,
             targetPrefix: target.prefix,
-            targetFieldname: target.pk,
+            targetFieldname: targetFieldname || target.pk,
         }
     }
 
