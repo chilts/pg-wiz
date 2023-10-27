@@ -183,9 +183,9 @@ export class Table {
                 join.targetPrefix,
                 'ON',
                 '(',
-                `${this.prefix}.${join.sourceFieldname}`,
-                '=',
                 `${join.targetPrefix}.${join.targetFieldname}`,
+                '=',
+                `${this.prefix}.${join.sourceFieldname}`,
                 ')',
             ].join(' ')
         }
@@ -198,9 +198,9 @@ export class Table {
                 join.targetPrefix,
                 'ON',
                 '(',
-                `${this.prefix}.${join.sourceFieldname}`,
-                '=',
                 `${join.targetPrefix}.${join.targetFieldname}`,
+                '=',
+                `${this.prefix}.${join.sourceFieldname}`,
                 ')',
             ].join(' ')
         }
@@ -213,9 +213,9 @@ export class Table {
                 join.targetPrefix,
                 'ON',
                 '(',
-                `${this.prefix}.${join.sourceFieldname}`,
-                '=',
                 `${join.targetPrefix}.${join.targetFieldname}`,
+                '=',
+                `${this.prefix}.${join.sourceFieldname}`,
                 ')',
             ].join(' ')
         }

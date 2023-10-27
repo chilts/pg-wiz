@@ -30,7 +30,7 @@ tap.test('.hasOne()', t => {
     t.same(itm.relationship, join, 'The join is correct')
 
     const joinSql = itm.join('account')
-    const joinExp = 'JOIN account acc ON ( itm.account_id = acc.id )'
+    const joinExp = 'JOIN account acc ON ( acc.id = itm.account_id )'
     t.equal(joinSql, joinExp, 'The JOIN is as expected')
 
     t.end()
@@ -62,7 +62,7 @@ tap.test('.hasMany()', t => {
     t.same(acc.relationship, join, 'The join is correct')
 
     const joinSql = acc.join('items')
-    const joinExp = 'JOIN item itm ON ( acc.id = itm.account_id )'
+    const joinExp = 'JOIN item itm ON ( itm.account_id = acc.id )'
     t.equal(joinSql, joinExp, 'The JOIN is as expected')
 
     t.end()
@@ -97,7 +97,7 @@ tap.test('.mayHaveOne()', t => {
     t.same(car.relationship, relationshipCar, 'The relationship is correct')
 
     const joinAccSql = car.join('accounts')
-    const joinAccExp = 'JOIN account acc ON ( car.id = acc.car_id )'
+    const joinAccExp = 'JOIN account acc ON ( acc.car_id = car.id )'
     t.equal(joinAccSql, joinAccExp, 'The JOIN is as expected')
 
     // test account
@@ -114,7 +114,7 @@ tap.test('.mayHaveOne()', t => {
     t.same(acc.relationship, relationshipAcc, 'The relationship is correct')
 
     const joinCarSql = acc.join('car')
-    const joinCarExp = 'LEFT JOIN car car ON ( acc.car_id = car.id )'
+    const joinCarExp = 'LEFT JOIN car car ON ( car.id = acc.car_id )'
     t.equal(joinCarSql, joinCarExp, 'The JOIN is as expected')
 
     t.end()
@@ -159,8 +159,8 @@ tap.test('Many to many with a junction table', t => {
         pst.id AS pst__id, pst.title AS pst__title, pst.content AS pst__content
       FROM
         like lik
-        JOIN account acc ON ( lik.account_id = acc.id )
-        JOIN post pst ON ( lik.post_id = pst.id )
+        JOIN account acc ON ( acc.id = lik.account_id )
+        JOIN post pst ON ( pst.id = lik.post_id )
     `
     t.equal(selLikesExp, selLikesSql, 'The big select through a junction table is correct')
 
