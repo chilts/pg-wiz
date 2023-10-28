@@ -193,6 +193,10 @@ export class Table {
         }).filter(Boolean).join(', ')
     }
 
+    insCols(colNames) {
+        return `(${this.insFields(colNames)}) VALUES(${this.insPlaceholders(colNames)})`
+    }
+
     updCols(colNames) {
         colNames = this.validateColNames('updCols', colNames, this.realColNames)
 
@@ -207,16 +211,16 @@ export class Table {
         return `${this.tablename} ${this.prefix}`
     }
 
-    sel() {
-        return `SELECT ${this.selCols()} FROM ${this.from()}`
+    sel(colNames) {
+        return `SELECT ${this.selCols(colNames)} FROM ${this.from()}`
     }
 
-    ins() {
-        return `INSERT INTO ${this.tablename}(${this.insFields()}) VALUES(${this.insPlaceholders()})`
+    ins(colNames) {
+        return `INSERT INTO ${this.tablename}${this.insCols(colNames)}`
     }
 
-    upd() {
-        return `UPDATE ${this.tablename} SET ${this.updCols()}`
+    upd(colNames) {
+        return `UPDATE ${this.tablename} SET ${this.updCols(colNames)}`
     }
 
     del() {
