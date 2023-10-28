@@ -5,7 +5,7 @@ import tap from 'tap'
 import * as pgWiz from '../pg-wiz.js'
 
 tap.test('Do a raw column type with a base column', t => {
-    t.plan(3)
+    t.plan(8)
 
     // table
     const acc = new pgWiz.Table('account', 'acc')
@@ -28,8 +28,20 @@ tap.test('Do a raw column type with a base column', t => {
     t.equal(acc.selCols(), accSelCols, 'Select cols is correct')
 
     // statements
+    const accInsCols = 'id, user_email, password'
+    t.equal(acc.insCols(), accInsCols, 'Insert cols is correct')
+    const accInsPlaceholders = '$1, $2, $3'
+    t.equal(acc.insPlaceholders(), accInsPlaceholders, 'Placeholders cols is correct')
     const accUpdCols = 'id = $1, user_email = $2, password = $3'
     t.equal(acc.updCols(), accUpdCols, 'Update cols is correct')
+
+    // and check a subset of columns too
+    const accInsColsId = 'id'
+    t.equal(acc.insCols([ 'id' ]), accInsColsId, 'Insert cols is correct')
+    const accInsPlaceholdersId = '$1'
+    t.equal(acc.insPlaceholders([ 'id' ]), accInsPlaceholdersId, 'Placeholders cols is correct')
+    const accUpdColsId = 'id = $1'
+    t.equal(acc.updCols([ 'id' ]), accUpdColsId, 'Update cols is correct')
 
     t.end()
 })

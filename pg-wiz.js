@@ -6,7 +6,10 @@ export class Table {
         this.colPrefix = prefix + '__'
         this.cols = []
         this.normalisedCols = []
+        this.colNames = []
         this.realCols = []
+        this.realColNames = []
+        this.col = {}
         this.relationship = {}
     }
 
@@ -15,7 +18,12 @@ export class Table {
             throw new Error(`setCols() - cols argument should be an array`)
         }
 
+        // we do various things to the incoming columns, so go through those now
+
+        // remember them all as-is
         this.cols = cols
+
+        // normalise them to have the same structure
         this.normalisedCols = cols.map(item => {
             if ( typeof item === 'string' ) {
                 return {
@@ -46,13 +54,43 @@ export class Table {
             }
         })
 
+        // get the column names so we have easy access
+        this.colNames = this.normalisedCols.map(item => item.name)
+
         // get only the 'real' columns in this list
         this.realCols = this.normalisedCols.filter(item => item.col)
+        this.realColNames = this.realCols.map(item => item.name)
+
+        // and finally, map them to an object for easy lookup
+        for ( const item of this.normalisedCols ) {
+            this.col[item.name] = item
+        }
+    }
+
+    validateColNames(fnName, colNames, defaultColNames) {
+        if ( colNames ) {
+            // check we know about each column
+            for ( const colName of colNames ) {
+                if ( !(colName in this.col) ) {
+                    throw new Error(`${fnName}() - Invalid column name '${colName}' being selected`)
+                }
+            }
+        }
+        else {
+            // no need to check, just assign to the incoming argument
+            colNames = defaultColNames
+        }
+
+        return colNames
     }
 
     // selCols() with a subset of cols?
-    selCols(cols) {
-        return this.normalisedCols.map(item => {
+    selCols(colNames) {
+        colNames = this.validateColNames('selCols', colNames, this.colNames)
+
+        return colNames.map(colName => {
+            const item = this.col[colName]
+
             if ( item.type === 'string' ) {
                 return `${this.prefix}.${item.col} AS ${this.prefix}__${item.name}`
             }
@@ -124,8 +162,13 @@ export class Table {
         }
     }
 
-    insCols() {
-        return this.realCols.map((item, i) => {
+    // ToDo: rename to insFields
+    insCols(colNames) {
+        colNames = this.validateColNames('insCols', colNames, this.realColNames)
+
+        return colNames.map((colName, i) => {
+            const item = this.col[colName]
+
             if ( item.type === 'string' ) {
                 return item.col
             }
@@ -135,8 +178,12 @@ export class Table {
         }).join(', ')
     }
 
-    insPlaceholders() {
-        return this.realCols.map((item, i) => {
+    insPlaceholders(colNames) {
+        colNames = this.validateColNames('insPlaceholders', colNames, this.realColNames)
+
+        return colNames.map((colName, i) => {
+            const item = this.col[colName]
+
             if ( item.type === 'string' ) {
                 return `$${i+1}`
             }
@@ -146,9 +193,12 @@ export class Table {
         }).filter(Boolean).join(', ')
     }
 
-    updCols() {
-        const cols = this.realCols.filter(item => item.col)
-        return cols.map((item, i) => {
+    updCols(colNames) {
+        colNames = this.validateColNames('updCols', colNames, this.realColNames)
+
+        return colNames.map((colName, i) => {
+            const item = this.col[colName]
+
             return `${item.col} = $${i+1}`
         }).join(', ')
     }
