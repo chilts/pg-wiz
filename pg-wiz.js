@@ -163,8 +163,8 @@ export class Table {
     }
 
     // ToDo: rename to insFields
-    insCols(colNames) {
-        colNames = this.validateColNames('insCols', colNames, this.realColNames)
+    insFields(colNames) {
+        colNames = this.validateColNames('insFields', colNames, this.realColNames)
 
         return colNames.map((colName, i) => {
             const item = this.col[colName]
@@ -212,7 +212,7 @@ export class Table {
     }
 
     ins() {
-        return `INSERT INTO ${this.tablename}(${this.insCols()}) VALUES(${this.insPlaceholders()})`
+        return `INSERT INTO ${this.tablename}(${this.insFields()}) VALUES(${this.insPlaceholders()})`
     }
 
     upd() {

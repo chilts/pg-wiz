@@ -28,16 +28,16 @@ tap.test('Do a raw column type with a base column', t => {
     t.equal(acc.selCols(), accSelCols, 'Select cols is correct')
 
     // statements
-    const accInsCols = 'id, user_email, password'
-    t.equal(acc.insCols(), accInsCols, 'Insert cols is correct')
+    const accInsFields = 'id, user_email, password'
+    t.equal(acc.insFields(), accInsFields, 'Insert cols is correct')
     const accInsPlaceholders = '$1, $2, $3'
     t.equal(acc.insPlaceholders(), accInsPlaceholders, 'Placeholders cols is correct')
     const accUpdCols = 'id = $1, user_email = $2, password = $3'
     t.equal(acc.updCols(), accUpdCols, 'Update cols is correct')
 
     // and check a subset of columns too
-    const accInsColsId = 'id'
-    t.equal(acc.insCols([ 'id' ]), accInsColsId, 'Insert cols is correct')
+    const accInsFieldsId = 'id'
+    t.equal(acc.insFields([ 'id' ]), accInsFieldsId, 'Insert cols is correct')
     const accInsPlaceholdersId = '$1'
     t.equal(acc.insPlaceholders([ 'id' ]), accInsPlaceholdersId, 'Placeholders cols is correct')
     const accUpdColsId = 'id = $1'

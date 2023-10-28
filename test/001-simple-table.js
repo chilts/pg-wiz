@@ -22,8 +22,8 @@ tap.test('Create a table instance', t => {
     const accSelCols = 'acc.id AS acc__id, acc.email AS acc__email, acc.password AS acc__password'
     t.equal(account.selCols(), accSelCols, 'Select cols is correct')
 
-    const accInsCols = 'id, email, password'
-    t.equal(account.insCols(), accInsCols, 'Insert cols is correct')
+    const accInsFields = 'id, email, password'
+    t.equal(account.insFields(), accInsFields, 'Insert cols is correct')
 
     const accInsPlaceholders = '$1, $2, $3'
     t.equal(account.insPlaceholders(), accInsPlaceholders, 'Insert placeholders is correct')
@@ -52,8 +52,8 @@ tap.test('Create a table instance but only use a subset of columns', t => {
     const accSelCols = 'acc.id AS acc__id, acc.email AS acc__email'
     t.equal(account.selCols([ 'id', 'email' ]), accSelCols, 'Select cols is correct')
 
-    const accInsCols = 'id, email'
-    t.equal(account.insCols([ 'id', 'email' ]), accInsCols, 'Insert cols is correct')
+    const accInsFields = 'id, email'
+    t.equal(account.insFields([ 'id', 'email' ]), accInsFields, 'Insert cols is correct')
 
     const accInsPlaceholders = '$1, $2'
     t.equal(account.insPlaceholders([ 'id', 'email' ]), accInsPlaceholders, 'Insert placeholders is correct')
