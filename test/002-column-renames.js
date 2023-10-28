@@ -14,11 +14,11 @@ tap.test('Do column renames as part of the setup', t => {
     t.same(account.cols, [], 'Columns is still zero')
 
     // cols
-    account.setCols(
+    account.setCols([
         [ 'account_id', 'id' ],
         [ 'user_email', 'email' ],
         [ 'pass', 'password' ],
-    )
+    ])
     t.same(account.cols, [ [ 'account_id', 'id' ], [ 'user_email', 'email' ], [ 'pass', 'password' ] ], 'Columns shows the new columns')
 
     // statements

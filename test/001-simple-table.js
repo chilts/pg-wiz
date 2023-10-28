@@ -15,7 +15,7 @@ tap.test('Create a table class', t => {
     t.same(account.cols, [], 'Columns is still zero')
 
     // cols
-    account.setCols('id', 'email', 'password')
+    account.setCols([ 'id', 'email', 'password' ])
     t.same(account.cols, [ 'id', 'email', 'password' ], 'Columns shows the new columns')
 
     // statements

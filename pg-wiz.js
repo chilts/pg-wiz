@@ -10,7 +10,11 @@ export class Table {
         this.relationship = {}
     }
 
-    setCols(...cols) {
+    setCols(cols) {
+        if ( !Array.isArray(cols) ) {
+            throw new Error(`setCols() - cols argument should be an array`)
+        }
+
         this.cols = cols
         this.normalisedCols = cols.map(item => {
             if ( typeof item === 'string' ) {
@@ -47,7 +51,7 @@ export class Table {
     }
 
     // selCols() with a subset of cols?
-    selCols() {
+    selCols(cols) {
         return this.normalisedCols.map(item => {
             if ( item.type === 'string' ) {
                 return `${this.prefix}.${item.col} AS ${this.prefix}__${item.name}`

@@ -11,7 +11,7 @@ tap.test('Do a raw column type with a base column', t => {
     const acc = new pgWiz.Table('account', 'acc')
 
     // cols
-    acc.setCols(
+    acc.setCols([
         'id',
         {
             type: 'raw',
@@ -20,7 +20,7 @@ tap.test('Do a raw column type with a base column', t => {
             raw: 'LOWER(acc.user_email)',
         },
         'password',
-    )
+    ])
     t.same(acc.cols, [ 'id', { type: 'raw', col: 'user_email', name: 'email', raw: 'LOWER(acc.user_email)' }, 'password' ], 'Columns shows the new columns')
 
     // statements
@@ -41,7 +41,7 @@ tap.test('Do a raw column type with no base column', t => {
     const acc = new pgWiz.Table('account', 'acc')
 
     // cols
-    acc.setCols(
+    acc.setCols([
         'id',
         {
             type: 'raw',
@@ -49,7 +49,7 @@ tap.test('Do a raw column type with no base column', t => {
             col: null,
             raw: 'NOW()',
         },
-    )
+    ])
     t.same(acc.cols, [ 'id', { name: 'now', type: 'raw', col: null, raw: 'NOW()' } ], 'Columns shows the new columns')
 
     // statements

@@ -8,7 +8,7 @@ tap.test('Column manipulation', t => {
     t.plan(3)
 
     const acc = new pgWiz.Table('account', 'acc')
-    acc.setCols( [ 'account_id', 'id' ], 'email', 'logins', [ 'created_date', 'inserted' ])
+    acc.setCols([ [ 'account_id', 'id' ], 'email', 'logins', [ 'created_date', 'inserted' ] ])
 
     const date = (new Date()).toISOString()
     const input = {

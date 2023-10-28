@@ -19,11 +19,11 @@ tap.test('Create a table class', t => {
     ]
 
     const org = new pgWiz.Table('organisation', 'org')
-    org.setCols(...cols)
+    org.setCols(cols)
 
     // a charity is an organisations
     const chr = new pgWiz.Table('organisation', 'chr')
-    chr.setCols(...org.cols)
+    chr.setCols(org.cols)
 
     t.same(org.cols, cols, 'Columns shows the new columns')
     t.same(chr.cols, cols, 'Columns shows the samecolumns')

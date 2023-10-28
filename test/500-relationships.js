@@ -8,11 +8,11 @@ tap.test('.hasOne()', t => {
     t.plan(2)
 
     const acc = new pgWiz.Table('account', 'acc', 'id')
-    acc.setCols('id', 'email')
+    acc.setCols([ 'id', 'email' ])
 
     // an "item" such as a "post", "tweet", "image", or "todo"
     const itm = new pgWiz.Table('item', 'itm', 'id')
-    itm.setCols('id', 'account_id', 'title')
+    itm.setCols([ 'id', 'account_id', 'title' ])
 
     // set up this relationship
     itm.hasOne('account', 'account_id', acc)
@@ -40,11 +40,11 @@ tap.test('.hasMany()', t => {
     t.plan(2)
 
     const acc = new pgWiz.Table('account', 'acc', 'id')
-    acc.setCols('id', 'email')
+    acc.setCols([ 'id', 'email' ])
 
     // an "item" such as a "post", "tweet", "image", or "todo"
     const itm = new pgWiz.Table('item', 'itm', 'id')
-    itm.setCols('id', 'account_id', 'title')
+    itm.setCols([ 'id', 'account_id', 'title' ])
 
     // set up this relationship
     acc.hasMany('items', itm, 'account_id')
@@ -73,11 +73,11 @@ tap.test('.mayHaveOne()', t => {
 
     // i.e. Each account *might* own a car (make/model), but not every account does.
     const acc = new pgWiz.Table('account', 'acc', 'id')
-    acc.setCols('id', 'car_id', 'email')
+    acc.setCols([ 'id', 'car_id', 'email' ])
 
     // a car
     const car = new pgWiz.Table('car', 'car', 'id')
-    car.setCols('id', 'make', 'model', 'year')
+    car.setCols([ 'id', 'make', 'model', 'year' ])
 
     // set up this relationship
     car.hasMany('accounts', acc, 'car_id')
@@ -124,13 +124,13 @@ tap.test('Many to many with a junction table', t => {
     t.plan(1)
 
     const acc = new pgWiz.Table('account', 'acc', 'id')
-    acc.setCols('id', 'email', 'username')
+    acc.setCols([ 'id', 'email', 'username' ])
 
     const pst = new pgWiz.Table('post', 'pst', 'id')
-    pst.setCols('id', 'title', 'content')
+    pst.setCols([ 'id', 'title', 'content' ])
 
     const lik = new pgWiz.Table('like', 'lik', 'id')
-    lik.setCols('id', 'account_id', 'post_id')
+    lik.setCols([ 'id', 'account_id', 'post_id' ])
 
     // many to many relationship through the junction table 'like'
 
@@ -171,17 +171,17 @@ tap.test('Errors with relationships', t => {
     t.plan(4)
 
     const org = new pgWiz.Table('organisation', 'org', 'id')
-    org.setCols('id', 'title', 'description')
+    org.setCols([ 'id', 'title', 'description' ])
 
     const car = new pgWiz.Table('car', 'car', 'id')
-    car.setCols('id', 'make', 'model', 'year')
+    car.setCols([ 'id', 'make', 'model', 'year' ])
 
     const acc = new pgWiz.Table('account', 'acc', 'id')
-    acc.setCols('id', 'organisation_id', 'car_id', 'email')
+    acc.setCols([ 'id', 'organisation_id', 'car_id', 'email' ])
 
     // an "item" such as a "post", "tweet", "image", or "todo"
     const itm = new pgWiz.Table('item', 'itm', 'id')
-    itm.setCols('id', 'account_id', 'title')
+    itm.setCols([ 'id', 'account_id', 'title' ])
 
     // `.hasMany()` throws with duplicate relationships
     acc.hasMany('items', itm, 'account_id')

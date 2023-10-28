@@ -9,11 +9,11 @@ tap.test('Select, Insert, Update, Delete', t => {
     t.plan(4)
 
     const acc = new pgWiz.Table('account', 'acc')
-    acc.setCols(
+    acc.setCols([
         'id',
         'email',
         'password',
-    )
+    ])
 
     t.equal(acc.sel(), 'SELECT acc.id AS acc__id, acc.email AS acc__email, acc.password AS acc__password FROM account acc', 'Select is correct')
     t.equal(acc.ins(), 'INSERT INTO account(id, email, password) VALUES($1, $2, $3)', 'Insert is correct')
@@ -27,7 +27,7 @@ tap.test('Select, Insert, Update, Delete with a raw column with backing col', t 
     t.plan(4)
 
     const acc = new pgWiz.Table('account', 'acc')
-    acc.setCols(
+    acc.setCols([
         'id',
         {
             name: 'email',
@@ -36,7 +36,7 @@ tap.test('Select, Insert, Update, Delete with a raw column with backing col', t 
             raw: 'LOWER(acc.email)',
         },
         'password',
-    )
+    ])
 
     t.equal(acc.sel(), 'SELECT acc.id AS acc__id, LOWER(acc.email) AS acc__email, acc.password AS acc__password FROM account acc', 'Select is correct')
     t.equal(acc.ins(), 'INSERT INTO account(id, email, password) VALUES($1, $2, $3)', 'Insert is correct')
@@ -50,7 +50,7 @@ tap.test('Select, Insert, Update, Delete with a raw column with no backing col',
     t.plan(4)
 
     const prp = new pgWiz.Table('property', 'prp')
-    prp.setCols(
+    prp.setCols([
         'key',
         'val',
         {
@@ -59,7 +59,7 @@ tap.test('Select, Insert, Update, Delete with a raw column with no backing col',
             col: null,
             raw: 'NOW()',
         },
-    )
+    ])
 
     t.equal(prp.sel(), 'SELECT prp.key AS prp__key, prp.val AS prp__val, NOW() AS prp__now FROM property prp', 'Select is correct')
     t.equal(prp.ins(), 'INSERT INTO property(key, val) VALUES($1, $2)', 'Insert is correct')
