@@ -39,3 +39,43 @@ tap.test('Column manipulation', t => {
 
     t.end()
 })
+
+tap.test('Pushing an object into another one (i.e. each account may have 0 or 1 carpark)', t => {
+    t.plan(1)
+
+    const acc = new pgWiz.Table('account', 'acc')
+    acc.setCols([ 'id', 'email' ])
+    const cpk = new pgWiz.Table('carpark', 'cpk')
+    cpk.setCols([ 'id', 'account_id', 'spot', 'description' ])
+
+    const date = (new Date()).toISOString()
+    const input = {
+        acc__id: 1,
+        acc__email: 'bob@example.com',
+        cpk__id: 2,
+        cpk__account_id: 1,
+        cpk__spot: 'C6',
+        cpk__description: 'Level 3, by the left wall.',
+    }
+    const exp = {
+        acc: {
+            id: 1,
+            email: 'bob@example.com',
+            cpk: {
+                id: 2,
+                account_id: 1,
+                spot: 'C6',
+                description: 'Level 3, by the left wall.',
+            },
+        },
+    }
+
+    const input1 = structuredClone(input)
+    const exp1 = exp
+    cpk.prefixToSubObj('cpk', input1)
+    acc.prefixToSubObj('acc', input1)
+    pgWiz.moveIntoObj('cpk', 'acc', input1)
+    t.same(input1, exp1, 'Newly structured data is correct')
+
+    t.end()
+})

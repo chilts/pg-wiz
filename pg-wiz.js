@@ -309,3 +309,12 @@ export class Table {
         return obj
     }
 }
+
+// Takes an object and moves the object into the other one.
+//
+// e.g. `{ acc: {}, blog: {} } -> { acc: { blog: {} } }`
+//   Calling : moveIntoObj('blog', 'acc', obj)
+export function moveIntoObj(name, into, obj) {
+    obj[into][name] = obj[name]
+    delete obj[name]
+}
