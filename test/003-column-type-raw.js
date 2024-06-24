@@ -13,15 +13,26 @@ tap.test('Do a raw column type with a base column', t => {
     // cols
     acc.setCols([
         'id',
+        firstname,
+        lastname,
         {
             type: 'raw',
-            name: 'email',
-            col: 'user_email',
-            raw: 'LOWER(__PREFIX__.user_email)',
+            name: 'fullname',
+            col: null,
+            raw: '__PREFIX__.firstname || ' ' || __PREFIX__.lastname',
         },
         'password',
     ])
-    t.same(acc.cols, [ 'id', { type: 'raw', col: 'user_email', name: 'email', raw: 'LOWER(__PREFIX__.user_email)' }, 'password' ], 'Columns shows the new columns')
+    t.same(
+        acc.cols,
+        [
+            'id',
+            'firstname',
+            'lastname',
+            { type: 'raw', col: null, name: 'fullname', raw: '__PREFIX__.firstname || ' ' || __PREFIX__.lastname' },
+        ],
+        'Columns shows the new columns'
+    )
     t.same(
         acc.normalisedCols,
         [
@@ -31,15 +42,21 @@ tap.test('Do a raw column type with a base column', t => {
                 name: 'id',
             },
             {
-                type: 'raw',
-                col: 'user_email',
-                name: 'email',
-                raw: 'LOWER(acc.user_email)',
+                type: 'string',
+                col: 'firstname',
+                name: 'firstname',
             },
             {
                 type: 'string',
-                col: 'password',
-                name: 'password',
+                col: 'lastname',
+                name: 'lasstname',
+            },
+            {
+                type: 'raw',
+                col: null,
+                name: 'fullname',
+                raw: 'acc.firstname || ' ' || acc.lastname',
+            },
             },
         ],
         'Columns shows the new normalised columns'

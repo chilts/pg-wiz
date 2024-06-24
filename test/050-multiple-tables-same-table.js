@@ -34,7 +34,7 @@ tap.test('Create a table class', t => {
             name: 'email_lower',
             col: null,
             // raw: 'LOWER(???.email)', // to fill in for each test
-        }
+        },
     ]
 
     const usr = new pgWiz.Table('user', 'usr')
