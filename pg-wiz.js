@@ -45,7 +45,7 @@ export class Table {
                         type: 'raw',
                         col: item.col,
                         name: item.name,
-                        raw: item.raw,
+                        raw: item.raw.replace('__PREFIX__', this.prefix),
                     }
                 }
                 else {

@@ -38,7 +38,7 @@ tap.test('Select, Insert, Update, Delete with a raw column with backing col', t 
             name: 'email',
             type: 'raw',
             col: 'email',
-            raw: 'LOWER(acc.email)',
+            raw: 'LOWER(__PREFIX__.email)',
         },
         'password',
     ])

@@ -5,7 +5,7 @@ import tap from 'tap'
 import * as pgWiz from '../pg-wiz.js'
 
 tap.test('Do a raw column type with a base column', t => {
-    t.plan(8)
+    t.plan(9)
 
     // table
     const acc = new pgWiz.Table('account', 'acc')
@@ -17,11 +17,33 @@ tap.test('Do a raw column type with a base column', t => {
             type: 'raw',
             name: 'email',
             col: 'user_email',
-            raw: 'LOWER(acc.user_email)',
+            raw: 'LOWER(__PREFIX__.user_email)',
         },
         'password',
     ])
-    t.same(acc.cols, [ 'id', { type: 'raw', col: 'user_email', name: 'email', raw: 'LOWER(acc.user_email)' }, 'password' ], 'Columns shows the new columns')
+    t.same(acc.cols, [ 'id', { type: 'raw', col: 'user_email', name: 'email', raw: 'LOWER(__PREFIX__.user_email)' }, 'password' ], 'Columns shows the new columns')
+    t.same(
+        acc.normalisedCols,
+        [
+            {
+                type: 'string',
+                col: 'id',
+                name: 'id',
+            },
+            {
+                type: 'raw',
+                col: 'user_email',
+                name: 'email',
+                raw: 'LOWER(acc.user_email)',
+            },
+            {
+                type: 'string',
+                col: 'password',
+                name: 'password',
+            },
+        ],
+        'Columns shows the new normalised columns'
+    )
 
     // statements
     const accSelCols = 'acc.id AS acc__id, LOWER(acc.user_email) AS acc__email, acc.password AS acc__password'

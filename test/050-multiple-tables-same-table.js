@@ -5,33 +5,57 @@ import tap from 'tap'
 import * as pgWiz from '../pg-wiz.js'
 
 tap.test('Create a table class', t => {
-    t.plan(4)
+    t.plan(6)
 
     const cols = [
         'id',
-        'name',
-        'title',
-        'address1',
-        'address2',
-        'city',
-        'postcode',
-        'country',
+        'email',
+        {
+            name: 'email_lower',
+            type: 'raw',
+            col: null,
+            raw: 'LOWER(__PREFIX__.email)',
+        }
     ]
 
-    const org = new pgWiz.Table('organisation', 'org')
-    org.setCols(cols)
+    const normalisedCols = [
+        {
+            type: 'string',
+            name: 'id',
+            col: 'id',
+        },
+        {
+            type: 'string',
+            name: 'email',
+            col: 'email',
+        },
+        {
+            type: 'raw',
+            name: 'email_lower',
+            col: null,
+            // raw: 'LOWER(???.email)', // to fill in for each test
+        }
+    ]
 
-    // a charity is an organisations
-    const chr = new pgWiz.Table('organisation', 'chr')
-    chr.setCols(org.cols)
+    const usr = new pgWiz.Table('user', 'usr')
+    usr.setCols(cols)
 
-    t.same(org.cols, cols, 'Columns shows the new columns')
-    t.same(chr.cols, cols, 'Columns shows the samecolumns')
+    // a member is a user
+    const mem = new pgWiz.Table('user', 'mem')
+    mem.setCols(cols)
 
-    const orgSelCols = cols.map(n => `org.${n} AS org__${n}`).join(', ')
-    t.equal(org.selCols(), orgSelCols, 'Select cols is correct for organisations')
-    const chrSelCols = cols.map(n => `chr.${n} AS chr__${n}`).join(', ')
-    t.equal(chr.selCols(), chrSelCols, 'Select cols is correct for charities')
+    t.same(usr.cols, cols, 'Columns shows the new columns')
+    t.same(mem.cols, cols, 'Columns shows the samecolumns')
+
+    normalisedCols[2].raw = 'LOWER(usr.email)'
+    t.same(usr.normalisedCols, normalisedCols, 'Normalised Columns is correct for the main table')
+    normalisedCols[2].raw = 'LOWER(mem.email)'
+    t.same(mem.normalisedCols, normalisedCols, 'Normalised Columns is correct for the pseudonym table')
+
+    const usrSelCols = 'usr.id AS usr__id, usr.email AS usr__email, LOWER(usr.email) AS usr__email_lower'
+    t.equal(usr.selCols(), usrSelCols, 'Select cols is correct for organisations')
+    const memSelCols = 'mem.id AS mem__id, mem.email AS mem__email, LOWER(mem.email) AS mem__email_lower'
+    t.equal(mem.selCols(), memSelCols, 'Select cols is correct for charities')
 
     t.end()
 })
