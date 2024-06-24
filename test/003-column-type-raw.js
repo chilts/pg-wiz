@@ -13,15 +13,14 @@ tap.test('Do a raw column type with a base column', t => {
     // cols
     acc.setCols([
         'id',
-        firstname,
-        lastname,
+        'firstname',
+        'lastname',
         {
             type: 'raw',
             name: 'fullname',
             col: null,
-            raw: '__PREFIX__.firstname || ' ' || __PREFIX__.lastname',
+            raw: "__PREFIX__.firstname || ' ' || __PREFIX__.lastname",
         },
-        'password',
     ])
     t.same(
         acc.cols,
@@ -29,7 +28,12 @@ tap.test('Do a raw column type with a base column', t => {
             'id',
             'firstname',
             'lastname',
-            { type: 'raw', col: null, name: 'fullname', raw: '__PREFIX__.firstname || ' ' || __PREFIX__.lastname' },
+            {
+                type: 'raw',
+                name: 'fullname',
+                col: null,
+                raw: "__PREFIX__.firstname || ' ' || __PREFIX__.lastname",
+            },
         ],
         'Columns shows the new columns'
     )
@@ -49,29 +53,28 @@ tap.test('Do a raw column type with a base column', t => {
             {
                 type: 'string',
                 col: 'lastname',
-                name: 'lasstname',
+                name: 'lastname',
             },
             {
                 type: 'raw',
-                col: null,
                 name: 'fullname',
-                raw: 'acc.firstname || ' ' || acc.lastname',
-            },
+                col: null,
+                raw: "acc.firstname || ' ' || acc.lastname",
             },
         ],
         'Columns shows the new normalised columns'
     )
 
     // statements
-    const accSelCols = 'acc.id AS acc__id, LOWER(acc.user_email) AS acc__email, acc.password AS acc__password'
+    const accSelCols = "acc.id AS acc__id, acc.firstname AS acc__firstname, acc.lastname AS acc__lastname, acc.firstname || ' ' || acc.lastname AS acc__fullname"
     t.equal(acc.selCols(), accSelCols, 'Select cols is correct')
 
     // statements
-    const accInsFields = 'id, user_email, password'
+    const accInsFields = 'id, firstname, lastname'
     t.equal(acc.insFields(), accInsFields, 'Insert cols is correct')
     const accInsPlaceholders = '$1, $2, $3'
     t.equal(acc.insPlaceholders(), accInsPlaceholders, 'Placeholders cols is correct')
-    const accUpdCols = 'id = $1, user_email = $2, password = $3'
+    const accUpdCols = 'id = $1, firstname = $2, lastname = $3'
     t.equal(acc.updCols(), accUpdCols, 'Update cols is correct')
 
     // and check a subset of columns too
